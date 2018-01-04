@@ -1,0 +1,8 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+                              xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<f:optionalBlock name="archiveProject" title="Archive Project" field="archiveProject" checked="${instance != null}" >
+    <f:entry title="Numbers to Keep" field="numToKeep" description="Specify the build numbers you want to keep.">
+      <f:number default="500" clazz="positive-number" min="1" step="1" />
+    </f:entry>
+  </f:optionalBlock>
+</j:jelly>

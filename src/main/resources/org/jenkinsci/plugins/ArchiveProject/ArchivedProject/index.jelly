@@ -1,0 +1,35 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <l:layout title="Archived Project" >
+        <l:side-panel>
+            <h1><strong>Archived Projects:</strong></h1>
+            <form>
+                <j:choose>
+                    <j:when test="${!it.archivedProjects.isEmpty()}">
+                        <j:forEach var="archiveProject" items="${it.archivedProjects}">
+                            <li>${archiveProject}</li>
+                        </j:forEach>
+                    </j:when>
+                    <j:otherwise>
+                        There are no archived projects.
+                    </j:otherwise>
+                </j:choose>
+            </form>
+            ${it.archiveWidget.backupsList}
+            <l:pane width="3" title="Backups">
+            <tr>
+                <th class="pane">Number</th>
+                <th class="pane">Name</th>
+                <th class="pane">Duration</th>
+            </tr>
+            <j:forEach var="backups" items="${it.archiveWidget.backupsList}">
+                <tr>
+                    <td class="pane" align="right">${backups.number}</td>
+                    <td class="pane" align="right">${backups.name}</td>
+                    <td class="pane" align="right">${backups.duration}</td>
+                </tr>
+            </j:forEach>
+            </l:pane>
+        </l:side-panel>
+    </l:layout>
+</j:jelly>
