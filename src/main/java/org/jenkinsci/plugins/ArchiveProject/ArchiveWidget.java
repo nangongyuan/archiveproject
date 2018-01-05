@@ -18,43 +18,54 @@ public class ArchiveWidget extends Widget {
 
     public static class Backups {
         private String number;
-        private String name;
-        private String duration;
+        private String user;
+        private String date;
+        private String result;
 
         public Backups(String number, String name, String duration) {
             this.number = number;
-            this.name = name;
-            this.duration = duration;
+            this.user = user;
+            this.date = date;
+            this.result = result;
         }
 
         public Backups() {
             this.number = "0";
-            this.name = "no name";
-            this.duration = "zero";
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getDuration() {
-            return duration;
+            this.user = "anonymous";
+            this.date = "1900-01-01";
+            this.result = "N/A";
         }
 
         public String getNumber() {
             return number;
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public String getUser() {
+            return user;
+        }
+
+        public String getDate() {
+            return date;
+        }
+
+        public String getResult() {
+            return result;
         }
 
         public void setNumber(String number) {
             this.number = number;
         }
 
-        public void setDuration(String duration) {
-            this.duration = duration;
+        public void setUser(String user) {
+            this.user = user;
+        }
+
+        public void setDate(String date) {
+            this.date = date;
+        }
+
+        public void setResult(String result) {
+            this.result = result;
         }
     }
 

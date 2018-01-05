@@ -2,6 +2,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
     <l:layout title="Archived Project" >
         <l:side-panel>
+            <!--
             <h1><strong>Archived Projects:</strong></h1>
             <form>
                 <j:choose>
@@ -15,18 +16,22 @@
                     </j:otherwise>
                 </j:choose>
             </form>
-            ${it.archiveWidget.backupsList}
-            <l:pane width="3" title="Backups">
+            -->
+            ${it.}
+            <l:task contextMenu="false" href="${rootURL}/" icon="icon-up icon-md" title="${%Back to Dashboard}"/>
+            <l:pane width="20" title="Backups">
             <tr>
-                <th class="pane">Number</th>
-                <th class="pane">Name</th>
-                <th class="pane">Duration</th>
+                <th class="pane" align="left">NO.</th>
+                <th class="pane" align="left">User</th>
+                <th class="pane" align="left">Date</th>
+                <th class="pane" align="left">Result</th>
             </tr>
             <j:forEach var="backups" items="${it.archiveWidget.backupsList}">
                 <tr>
-                    <td class="pane" align="right">${backups.number}</td>
-                    <td class="pane" align="right">${backups.name}</td>
-                    <td class="pane" align="right">${backups.duration}</td>
+                    <td class="pane" align="left">#${backups.number}</td>
+                    <td class="pane" align="left">${backups.user}</td>
+                    <td class="pane" align="left">${backups.date}</td>
+                    <td class="pane" align="left">${backups.result}</td>
                 </tr>
             </j:forEach>
             </l:pane>
