@@ -17,7 +17,6 @@
                 </j:choose>
             </form>
             -->
-            ${it.}
             <l:task contextMenu="false" href="${rootURL}/" icon="icon-up icon-md" title="${%Back to Dashboard}"/>
             <l:pane width="20" title="Backups">
             <tr>
@@ -36,5 +35,59 @@
             </j:forEach>
             </l:pane>
         </l:side-panel>
+        <l:main-panel>
+            <h3>Build Information:</h3>
+            <f:entry name="buildNumber" title="Choose Build Number: " field="buildNumber">
+                <select name="buildNumber" id="buildNo" onchange="Show_Parameters()">
+                    <j:forEach var="backups" items="${it.archiveWidget.backupsList}">
+                        <option value="${backups.number}">${backups.number}</option>
+                    </j:forEach>
+                </select>
+            </f:entry>
+            <h3>Build Parameters:</h3>
+            <form name="build" action="buildSubmit" method="post">
+            <table id="parameterTable" width="70%">
+            </table>
+            <script>
+                function Show_Parameters(){
+                    var archive_obj = <st:bind value="${it}" />;
+                    var buildNo = document.getElementById('buildNo');
+                    var buildNumber = buildNo.options[buildNo.selectedIndex].text;
+                    //console.log("selected value:" + buildNumber);
+                    archive_obj.GetParameters(buildNumber, function(map){
+                        htmlString = '';
+                        for(var key in map.responseJSON){
+                            if (map.responseJSON[key].indexOf("\n") == -1){
+                                //console.log("No newline in :" + map.responseJSON[key]);
+                                htmlString = htmlString + '<tbody><tr><td class="setting-name">' + key +'</td><td class="setting-main"><div><input value="default" type="hidden"/><input value="' + map.responseJSON[key] +'" class="setting-input" type="text" /></div></td></tr></tbody>';
+                            }else{
+                                //console.log("Have newline in :" + map.responseJSON[key]);
+                                htmlString = htmlString + '<tbody><tr><td class="setting-name">' + key +'</td><td class="setting-main"><textarea name="value" class="setting-input" rows="7">' + map.responseJSON[key] +'</textarea></td></tr></tbody>';
+                            }
+                        }
+                    var parameterTable = document.getElementById('parameterTable');
+                    parameterTable.innerHTML = htmlString.trim();
+                    });
+                }
+                document.addEventListener("DOMContentLoaded", function(){
+                    Show_Parameters();
+                });
+            </script>
+            <br/>
+            <table>
+                <tbody>
+                    <tr>
+                        <td colspan="4">
+                            <span class="yui-button yui-submit-button submit-button primary" id="archive-reb" name="Submit">
+                                <span class="first-child">
+                                    <button type="button" id="archive-reb-button">Rebuild</button>
+                                </span>
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </form>
+        </l:main-panel>
     </l:layout>
 </j:jelly>

@@ -1,10 +1,12 @@
 package org.jenkinsci.plugins.ArchiveProject;
 
+import com.jcabi.xml.XMLDocument;
 import hudson.Extension;
 import hudson.model.Action;
 import hudson.model.Hudson;
 import hudson.model.Project;
 import hudson.security.Permission;
+import jenkins.model.Jenkins;
 import jenkins.model.TransientActionFactory;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.dom4j.Document;
@@ -14,10 +16,15 @@ import org.dom4j.io.SAXReader;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.FileFilter;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import com.jcabi.xml.XML;
+import org.kohsuke.stapler.bind.JavaScriptMethod;
 
 public class ArchivedProject implements Action {
 
@@ -46,9 +53,9 @@ public class ArchivedProject implements Action {
     }
 
     public List<String> getArchivedProjects() {
-        Hudson.getInstanceOrNull().checkPermission(Permission.READ);
+        Jenkins.getInstance().checkPermission(Permission.READ);
 
-        final File archivedProjectsDir = new File(Hudson.getInstanceOrNull().getRootDir(), "backup/" + project.getDisplayName() + "/builds");
+        final File archivedProjectsDir = new File(Jenkins.getInstance().getRootDir(), "backup/" + project.getDisplayName() + "/builds");
 
         File[] archivedProjects = archivedProjectsDir.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
 
@@ -64,7 +71,7 @@ public class ArchivedProject implements Action {
     }
 
     public ArchiveWidget getArchiveWidget() {
-        Hudson.getInstanceOrNull().checkPermission(Permission.READ);
+        Jenkins.getInstance().checkPermission(Permission.READ);
         List<ArchiveWidget.Backups> backupsList = new ArrayList<ArchiveWidget.Backups>();
         /*
         for (int i=1; i < 5; i++) {
@@ -75,7 +82,7 @@ public class ArchivedProject implements Action {
             backupsList.add(backups);
         }*/
 
-        final File archivedProjectsDir = new File(Hudson.getInstanceOrNull().getRootDir(), "backup/" + project.getDisplayName() + "/builds");
+        final File archivedProjectsDir = new File(Jenkins.getInstance().getRootDir(), "backup/" + project.getDisplayName() + "/builds");
         File[] archivedProjects = archivedProjectsDir.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
 
         List<Integer> allBuilds = new LinkedList<Integer>();
@@ -88,10 +95,7 @@ public class ArchivedProject implements Action {
         for (Integer b:allBuilds) {
             ArchiveWidget.Backups backups = new ArchiveWidget.Backups();
             backups.setNumber(Integer.toString(b));
-
             File buildXml = new File(archivedProjectsDir, Integer.toString(b) + "/build.xml");
-
-
             if (! buildXml.exists()) {
                 System.exit(1);
             }
@@ -123,6 +127,36 @@ public class ArchivedProject implements Action {
         ArchiveWidget archiveWidget = new ArchiveWidget();
         archiveWidget.setBackupsList(backupsList);
         return archiveWidget;
+    }
+
+    @JavaScriptMethod
+    public Map GetParameters(String build_number){
+        final File archivedProjectsDir = new File(Jenkins.getInstance().getRootDir(), "backup/" + project.getDisplayName() + "/builds");
+        File buildXml = new File(archivedProjectsDir, build_number + "/build.xml");
+        Map parameter_map = new HashMap();
+        try {
+            if (buildXml.exists()) {
+                System.out.println(build_number);
+                XML build_xml_obj = new XMLDocument(buildXml);
+                int loop_number = 0;
+                String map_key="";
+                for (String text: build_xml_obj.xpath("/build/actions/hudson.model.ParametersAction/parameters/*/name/text() | /build/actions/hudson.model.ParametersAction/parameters/*/value/text()")){
+                    loop_number++;
+                    if ( loop_number%2 == 1) {
+                        map_key = text;
+                        System.out.println("Map key:");
+                        System.out.println(text);
+                    } else {
+                        parameter_map.put(map_key, text);
+                        System.out.println("Map value:");
+                        System.out.println(text);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            return parameter_map;
+        }
+        return parameter_map;
     }
 
     @Extension

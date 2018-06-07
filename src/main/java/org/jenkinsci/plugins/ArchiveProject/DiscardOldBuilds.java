@@ -8,7 +8,7 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Recorder;
 import jenkins.model.BuildDiscarder;
 import jenkins.model.BuildDiscarderDescriptor;
-import org.jenkinsci.Symbol;
+// import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;

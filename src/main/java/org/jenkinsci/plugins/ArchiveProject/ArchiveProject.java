@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.ArchiveProject;
 import hudson.Extension;
 import hudson.model.*;
 import hudson.security.Permission;
+import jenkins.model.Jenkins;
 import jenkins.model.TransientActionFactory;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.stapler.HttpResponse;
@@ -53,9 +54,9 @@ public class ArchiveProject implements Action {
 
     public HttpResponse doArchiveProject() throws IOException, InterruptedException {
 
-        Hudson.getInstanceOrNull().checkPermission( Permission.CONFIGURE );
+        Jenkins.getInstance().checkPermission( Permission.CONFIGURE );
 
-        File backupDir = new File(Hudson.getInstanceOrNull().getRootDir(), "backup");
+        File backupDir = new File(Jenkins.getInstance().getRootDir(), "backup");
         File backupProjectDir = new File(backupDir, project.getName());
         backupProjectDir.mkdirs();
         FileUtils.copyDirectory(project.getRootDir(), backupProjectDir);
