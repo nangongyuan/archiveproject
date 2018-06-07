@@ -144,12 +144,8 @@ public class ArchivedProject implements Action {
                     loop_number++;
                     if ( loop_number%2 == 1) {
                         map_key = text;
-                        System.out.println("Map key:");
-                        System.out.println(text);
                     } else {
                         parameter_map.put(map_key, text);
-                        System.out.println("Map value:");
-                        System.out.println(text);
                     }
                 }
             }
