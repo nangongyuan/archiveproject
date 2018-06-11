@@ -20,6 +20,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.FileFilter;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -87,7 +88,15 @@ public class ArchivedProject implements Action {
 
         List<Integer> allBuilds = new LinkedList<Integer>();
         for (File p:archivedProjects) {
-            allBuilds.add(Integer.parseInt(p.getName()));
+            if (Files.isSymbolicLink(p.toPath())) {
+                System.out.println(p.getName());
+                try {
+                    Integer.parseInt(p.getName());
+                } catch (NumberFormatException ex) {
+                    continue;
+                }
+                allBuilds.add(Integer.parseInt(p.getName()));
+            }
         }
         Collections.sort(allBuilds);
         Collections.reverse(allBuilds);

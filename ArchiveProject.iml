@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -18,6 +18,12 @@
     <orderEntry type="library" name="Maven: javax.validation:validation-api:1.1.0.Final" level="project" />
     <orderEntry type="library" name="Maven: com.jcabi:jcabi-immutable:1.4" level="project" />
     <orderEntry type="library" name="Maven: org.cactoos:cactoos:0.20" level="project" />
+    <orderEntry type="library" name="Maven: org.mortbay.jetty:jsp-2.1:6.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jdt:core:3.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.mortbay.jetty:servlet-api-2.5:6.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.mortbay.jetty:jetty-util:6.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.mortbay.jetty:jsp-api-2.1:6.0.0" level="project" />
+    <orderEntry type="library" name="Maven: ant:ant:1.6.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jenkins-ci.main:jenkins-war:war:1.580.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.jenkins-ci.main:jenkins-core:1.580.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.jenkins-ci.plugins.icon-shim:icon-set:1.0.3" level="project" />
@@ -212,7 +218,6 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.jenkins-ci.plugins:matrix-project:1.0-beta-1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jenkins-ci.plugins:junit:1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:jetty:6.1.26" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:jetty-util:6.1.26" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:servlet-api:2.5-20081211" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jenkins-ci:test-annotations:1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jvnet.mock-javamail:mock-javamail:1.7" level="project" />

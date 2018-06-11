@@ -13,6 +13,9 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileAttribute;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -52,6 +55,31 @@ public class ArchiveProject implements Action {
         return project;
     }
 
+    /*
+    private static void copyFolder(File sourceFolder, File destinationFolder) throws IOException
+    {
+        CopyOption[] copyOptions = new CopyOption[]{
+                StandardCopyOption.REPLACE_EXISTING,
+                LinkOption.NOFOLLOW_LINKS
+        };
+        if (sourceFolder.isDirectory()) {
+            if (!destinationFolder.exists()){
+                destinationFolder.mkdir();
+            }
+
+            String files[] = sourceFolder.list();
+            for (String file: files) {
+                File scrFile = new File(sourceFolder, file);
+                File destFile = new File(destinationFolder, file);
+
+                copyFolder(scrFile, destFile);
+            }
+        } else {
+            Files.copy(sourceFolder.toPath(), destinationFolder.toPath(), copyOptions);
+        }
+    }
+    */
+
     public HttpResponse doArchiveProject() throws IOException, InterruptedException {
 
         Jenkins.getInstance().checkPermission( Permission.CONFIGURE );
@@ -59,7 +87,10 @@ public class ArchiveProject implements Action {
         File backupDir = new File(Jenkins.getInstance().getRootDir(), "backup");
         File backupProjectDir = new File(backupDir, project.getName());
         backupProjectDir.mkdirs();
-        FileUtils.copyDirectory(project.getRootDir(), backupProjectDir);
+        //Files.copy(project.getRootDir().toPath(), backupProjectDir.toPath(), copyOptions);
+        // FileUtils.copyDirectory(project.getRootDir(), backupProjectDir);
+        // copyFolder(project.getRootDir(), backupProjectDir);
+        Files.walkFileTree(project.getRootDir().toPath(), new CopyDir(project.getRootDir().toPath(), backupProjectDir.toPath()));
         File backupProjectBuildsDir = new File(backupProjectDir, "builds");
 
         if (backupProjectBuildsDir.exists()) {
@@ -67,6 +98,44 @@ public class ArchiveProject implements Action {
         }
 
         return HttpResponses.redirectTo(".");
+    }
+
+    public class CopyDir extends SimpleFileVisitor<Path> {
+        private Path sourceDir;
+        private Path targetDir;
+
+        public CopyDir(Path sourceDir, Path targetDir) {
+            this.sourceDir = sourceDir;
+            this.targetDir = targetDir;
+        }
+
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes basicFileAttributes) {
+            try {
+                Path targetFile = targetDir.resolve(sourceDir.relativize(file));
+                CopyOption[] copyOptions = new CopyOption[] {
+                        StandardCopyOption.REPLACE_EXISTING,
+                        LinkOption.NOFOLLOW_LINKS
+                };
+                Files.copy(file, targetFile, copyOptions);
+            } catch (IOException ex) {
+                System.err.println(ex);
+            }
+
+            return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes basicFileAttributes) {
+            try {
+                Path newDir = targetDir.resolve(sourceDir.relativize(dir));
+                Files.createDirectory(newDir);
+            } catch (IOException ex) {
+                System.err.println(ex);
+            }
+
+            return FileVisitResult.CONTINUE;
+        }
     }
 
     @Extension

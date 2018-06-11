@@ -38,6 +38,11 @@
             <artifactId>jcabi-xml</artifactId>
             <version>0.21.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jsp-2.1</artifactId>
+            <version>6.0.0</version>
+        </dependency>
     </dependencies>
 
     <!-- If you want this to appear on the wiki page:
