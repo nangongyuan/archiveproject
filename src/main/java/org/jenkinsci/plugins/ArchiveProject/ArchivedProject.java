@@ -2,12 +2,11 @@ package org.jenkinsci.plugins.ArchiveProject;
 
 import com.jcabi.xml.XMLDocument;
 import hudson.Extension;
-import hudson.model.Action;
-import hudson.model.Hudson;
-import hudson.model.Project;
+import hudson.model.*;
 import hudson.security.Permission;
 import jenkins.model.Jenkins;
 import jenkins.model.TransientActionFactory;
+import net.sf.json.JSONObject;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -16,20 +15,27 @@ import org.dom4j.io.SAXReader;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Queue;
 
 import com.jcabi.xml.XML;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 
 public class ArchivedProject implements Action {
 
     private Project project;
+
+    private transient Run<?, ?> build;
 
     public ArchivedProject(Project project) {
         this.project = project;
@@ -51,6 +57,10 @@ public class ArchivedProject implements Action {
     @Override
     public String getUrlName() {
         return "archived";
+    }
+
+    public Run<?, ?> getBuild() {
+        return build;
     }
 
     public List<String> getArchivedProjects() {
@@ -89,7 +99,7 @@ public class ArchivedProject implements Action {
         List<Integer> allBuilds = new LinkedList<Integer>();
         for (File p:archivedProjects) {
             if (Files.isSymbolicLink(p.toPath())) {
-                System.out.println(p.getName());
+                // System.out.println(p.getName());
                 try {
                     Integer.parseInt(p.getName());
                 } catch (NumberFormatException ex) {
@@ -145,7 +155,7 @@ public class ArchivedProject implements Action {
         Map parameter_map = new HashMap();
         try {
             if (buildXml.exists()) {
-                System.out.println(build_number);
+                // System.out.println(build_number);
                 XML build_xml_obj = new XMLDocument(buildXml);
                 int loop_number = 0;
                 String map_key="";
@@ -162,6 +172,41 @@ public class ArchivedProject implements Action {
             return parameter_map;
         }
         return parameter_map;
+    }
+
+    public void doBuildSubmit(StaplerRequest req, StaplerResponse rsp) throws ServletException, IOException, InterruptedException {
+        Job project = this.project;
+        if (project == null) {
+            return;
+        }
+        project.checkPermission(Item.BUILD);
+
+        System.out.println("Rebuild:");
+        System.out.println(isRebuildAvailable());
+
+        if (isRebuildAvailable()) {
+            if (!req.getMethod().equals("POST")) {
+                req.getView(this, "index.jelly").forward(req, rsp);
+                return;
+            }
+            build = req.findAncestorObject(Run.class);
+            //ParametersDefinitionProperty paramDefProp = build.getParent().getProperty(ParametersDefinitionProperty.class);
+            JSONObject formData = req.getSubmittedForm();
+            System.out.println(formData);
+        }
+        BooleanParameterDefinition booleanParameterDefinition = new BooleanParameterDefinition("bool", false, "");
+        ParameterValue parameterValue = booleanParameterDefinition.createValue("true");
+        System.out.println("My bool parametervalue:");
+        System.out.println(parameterValue);
+        rsp.sendRedirect("../");
+    }
+
+    public boolean isRebuildAvailable() {
+        Job project = this.project;
+        return project != null
+                && project.hasPermission(Item.BUILD)
+                && project.isBuildable()
+                && project instanceof hudson.model.Queue.Task;
     }
 
     @Extension

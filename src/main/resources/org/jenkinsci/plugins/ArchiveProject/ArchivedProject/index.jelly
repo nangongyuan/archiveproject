@@ -75,17 +75,22 @@
             </script>
             <br/>
             <table>
+                <!--
                 <tbody>
                     <tr>
                         <td colspan="4">
-                            <span class="yui-button yui-submit-button submit-button primary" id="archive-reb" name="Submit">
+                            <span class="yui-button yui-submit-button submit-button primary" id="yui-gen1" name="Submit">
                                 <span class="first-child">
-                                    <button type="button" id="archive-reb-button">Rebuild</button>
+                                    <button type="button" tabindex="0" id="yui-gen1-button">Rebuild</button>
                                 </span>
                             </span>
                         </td>
                     </tr>
                 </tbody>
+                -->
+                <f:block>
+                    <f:submit value="Rebuild" />
+                </f:block>
             </table>
             </form>
         </l:main-panel>
