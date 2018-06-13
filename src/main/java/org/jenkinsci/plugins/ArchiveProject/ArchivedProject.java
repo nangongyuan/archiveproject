@@ -30,6 +30,8 @@ import com.jcabi.xml.XML;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class ArchivedProject implements Action {
 
@@ -149,29 +151,33 @@ public class ArchivedProject implements Action {
     }
 
     @JavaScriptMethod
-    public Map GetParameters(String build_number){
+    public List<HashMap<String, String>> GetParameters(String build_number){
         final File archivedProjectsDir = new File(Jenkins.getInstance().getRootDir(), "backup/" + project.getDisplayName() + "/builds");
         File buildXml = new File(archivedProjectsDir, build_number + "/build.xml");
-        Map parameter_map = new HashMap();
+        // Map parameter_map = new HashMap();
+        // List<HashMap> parameterList = null;
+        ArrayList<HashMap<String, String>> parameterList = new ArrayList<HashMap<String, String>>();
         try {
             if (buildXml.exists()) {
-                // System.out.println(build_number);
                 XML build_xml_obj = new XMLDocument(buildXml);
-                int loop_number = 0;
-                String map_key="";
-                for (String text: build_xml_obj.xpath("/build/actions/hudson.model.ParametersAction/parameters/*/name/text() | /build/actions/hudson.model.ParametersAction/parameters/*/value/text()")){
-                    loop_number++;
-                    if ( loop_number%2 == 1) {
-                        map_key = text;
-                    } else {
-                        parameter_map.put(map_key, text);
+                for (XML paramList: build_xml_obj.nodes("//parameters/*")){
+                    HashMap<String, String> buildParameter = new HashMap<String, String>();
+                    buildParameter.put("type", paramList.node().getNodeName());
+                    NodeList nodeList = paramList.node().getChildNodes();
+                    for (int i=0; i<nodeList.getLength(); i++) {
+                        Node node = nodeList.item(i);
+                        if (node.hasChildNodes()) {
+                            buildParameter.put(node.getNodeName(), node.getFirstChild().getNodeValue());
+                        }
                     }
+                    parameterList.add(buildParameter);
                 }
             }
         } catch (Exception e) {
-            return parameter_map;
+            return parameterList;
         }
-        return parameter_map;
+        System.out.println(parameterList);
+        return parameterList;
     }
 
     public void doBuildSubmit(StaplerRequest req, StaplerResponse rsp) throws ServletException, IOException, InterruptedException {
