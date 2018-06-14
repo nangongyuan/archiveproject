@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="6bf0f410-ac52-4909-a0ff-be9c4f81d032" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/jenkinsci/plugins/ArchiveProject/ArchivedProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/jenkinsci/plugins/ArchiveProject/ArchivedProject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/org/jenkinsci/plugins/ArchiveProject/ArchivedProject/index.jelly" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/jenkinsci/plugins/ArchiveProject/ArchivedProject/index.jelly" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
@@ -32,7 +31,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/org/jenkinsci/plugins/ArchiveProject/ArchivedProject.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="251">
-              <caret line="178" column="42" selection-start-line="178" selection-start-column="42" selection-end-line="178" selection-end-column="42" />
+              <caret line="172" column="54" selection-start-line="172" selection-start-column="54" selection-end-line="172" selection-end-column="54" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1274#1275#0" expanded="true" />
@@ -52,8 +51,8 @@
       <file leaf-file-name="index.jelly" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/resources/org/jenkinsci/plugins/ArchiveProject/ArchivedProject/index.jelly">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="263">
-              <caret line="126" column="20" selection-start-line="126" selection-start-column="20" selection-end-line="126" selection-end-column="20" />
+            <state relative-caret-position="214">
+              <caret line="98" column="25" selection-start-line="98" selection-start-column="25" selection-end-line="98" selection-end-column="25" />
             </state>
           </provider>
         </entry>
@@ -293,7 +292,7 @@
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.4978678" weight="0.32936078" />
-      <window_info active="true" anchor="bottom" id="Messages" order="7" sideWeight="0.45735607" visible="true" weight="0.24397591" />
+      <window_info active="true" anchor="bottom" id="Messages" order="7" sideWeight="0.45735607" visible="true" weight="0.2951807" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info id="Image Layers" order="2" />
       <window_info anchor="right" id="Capture Analysis" order="3" />
@@ -821,7 +820,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/org/jenkinsci/plugins/ArchiveProject/ArchivedProject.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="251">
-          <caret line="178" column="42" selection-start-line="178" selection-start-column="42" selection-end-line="178" selection-end-column="42" />
+          <caret line="172" column="54" selection-start-line="172" selection-start-column="54" selection-end-line="172" selection-end-column="54" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#1274#1275#0" expanded="true" />
@@ -839,8 +838,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/org/jenkinsci/plugins/ArchiveProject/ArchivedProject/index.jelly">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="263">
-          <caret line="126" column="20" selection-start-line="126" selection-start-column="20" selection-end-line="126" selection-end-column="20" />
+        <state relative-caret-position="214">
+          <caret line="98" column="25" selection-start-line="98" selection-start-column="25" selection-end-line="98" selection-end-column="25" />
         </state>
       </provider>
     </entry>

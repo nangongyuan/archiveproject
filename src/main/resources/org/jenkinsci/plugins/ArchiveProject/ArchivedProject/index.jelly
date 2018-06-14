@@ -55,65 +55,46 @@
                     //console.log("selected value:" + buildNumber);
                     archive_obj.GetParameters(buildNumber, function(map){
                         htmlString = '';
+                        var loopNum = map.responseJSON.length - 1;
                         for (var index in map.responseJSON){
+                            nameStr = map.responseJSON[index]["name"];
+                            valueStr = map.responseJSON[index]["value"];
                             switch(map.responseJSON[index]["type"]){
                                 case "hudson.model.BooleanParameterValue":
-                                    nameStr = map.responseJSON[index]["name"].toString();
-                                    valueStr = map.responseJSON[index]["value"].toString();
-                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + valueStr +'" /><f:checkbox name="value" checked="' + valueStr +'" /></div></f:entry></tbody>';
-                                    console.log(htmlString);
+                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + nameStr +'" /><f:checkbox name="value" checked="' + valueStr +'" /></div></f:entry></tbody>';
                                     break;
                                 case "hudson.model.StringParameterValue":
-                                    console.log(map.responseJSON[index]["name"]);
-                                    console.log(map.responseJSON[index]["value"]);
+                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="' + nameStr +'" /><input description="String" name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
                                 case "hudson.model.PasswordParameterValue":
-                                    console.log(map.responseJSON[index]["name"]);
-                                    console.log(map.responseJSON[index]["value"]);
+                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + nameStr +'" /><f:password name="value" value="' + valueStr +'" /></div></f:entry></tbody>';
                                     break;
                                 case "hudson.model.TextParameterValue":
-                                    console.log(map.responseJSON[index]["name"]);
-                                    console.log(map.responseJSON[index]["value"]);
+                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + nameStr +'" /><f:textarea name="value" value="' + valueStr +'" description="TextArea" /></div></f:entry></tbody>';
                                     break;
                                 case "hudson.model.ValidatingStringParameterValue":
-                                    console.log(map.responseJSON[index]["name"]);
-                                    console.log(map.responseJSON[index]["value"]);
-                                    break;
-                                case "hudson.model.RunParameterValue":
-                                    console.log(map.responseJSON[index]["name"]);
-                                    console.log(map.responseJSON[index]["value"]);
+                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
                                 case "hudson.model.RandomStringParameterValue":
-                                    console.log(map.responseJSON[index]["name"]);
-                                    console.log(map.responseJSON[index]["value"]);
-                                    break;
-                                case "hudson.model.NodeParameterValue":
-                                    console.log(map.responseJSON[index]["name"]);
-                                    console.log(map.responseJSON[index]["value"]);
-                                    break;
-                                case "hudson.model.MavenMetadataParameterValue":
-                                    console.log(map.responseJSON[index]["name"]);
-                                    console.log(map.responseJSON[index]["value"]);
+                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
                                 case "hudson.model.ListSubversionTagsParameterValue":
-                                    console.log(map.responseJSON[index]["name"]);
-                                    console.log(map.responseJSON[index]["value"]);
+                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
                                 case "hudson.model.LabelParameterValue":
-                                    console.log(map.responseJSON[index]["name"]);
-                                    console.log(map.responseJSON[index]["value"]);
+                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
                                 case "hudson.model.FileParameterValue":
-                                    console.log(map.responseJSON[index]["name"]);
-                                    console.log(map.responseJSON[index]["value"]);
+                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + nameStr +'" /><input name="file" type="file" jsonAware="true" /></div></f:entry></tbody>';
                                     break;
                                 case "hudson.model.ExtendedChoiceParameterValue":
-                                    console.log(map.responseJSON[index]["name"]);
-                                    console.log(map.responseJSON[index]["value"]);
+                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
                                 default:
-                                    console.log(map.responseJSON[index]["name"]);
-                                    console.log(map.responseJSON[index]["value"]);
+                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
+                            }
+                            if ( index == loopNum) {
+                                break;
                             }
                         }
                     var parameterTable = document.getElementById('parameterTable');
