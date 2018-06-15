@@ -6,6 +6,7 @@ import hudson.model.*;
 import hudson.security.Permission;
 import jenkins.model.Jenkins;
 import jenkins.model.TransientActionFactory;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.dom4j.Document;
@@ -176,7 +177,6 @@ public class ArchivedProject implements Action {
         } catch (Exception e) {
             return parameterList;
         }
-        System.out.println(parameterList);
         return parameterList;
     }
 
@@ -187,9 +187,6 @@ public class ArchivedProject implements Action {
         }
         project.checkPermission(Item.BUILD);
 
-        System.out.println("Rebuild:");
-        System.out.println(isRebuildAvailable());
-
         if (isRebuildAvailable()) {
             if (!req.getMethod().equals("POST")) {
                 req.getView(this, "index.jelly").forward(req, rsp);
@@ -198,14 +195,70 @@ public class ArchivedProject implements Action {
             build = req.findAncestorObject(Run.class);
             //ParametersDefinitionProperty paramDefProp = build.getParent().getProperty(ParametersDefinitionProperty.class);
             JSONObject formData = req.getSubmittedForm();
+            System.out.println("--------------------------");
             System.out.println(formData);
+            System.out.println("--------------------------");
+            System.out.println(formData.get("buildNumber"));
+            System.out.println("--------------------------");
+            List<ParameterValue> values = new ArrayList<ParameterValue>();
+            if (!formData.isEmpty()) {
+                JSONArray a = JSONArray.fromObject(formData.get("parameter"));
+                for (Object o : a) {
+                    JSONObject jo = (JSONObject)o;
+                    switch (Type.valueOf(jo.getString("type").split("\\.")[2])) {
+                        case BooleanParameterValue:
+                            BooleanParameterDefinition booleanParameterDefinition = new BooleanParameterDefinition(jo.getString("name"), false, "");
+                            ParameterValue parameterBoolValue = booleanParameterDefinition.createValue(jo.getString("value"));
+                            values.add(parameterBoolValue);
+                            break;
+                        case StringParameterValue:
+                            StringParameterDefinition stringParameterDefinition = new StringParameterDefinition(jo.getString("name"), "", "");
+                            ParameterValue parameterStringValue = stringParameterDefinition.createValue(jo.getString("value"));
+                            values.add(parameterStringValue);
+                            break;
+                        case PasswordParameterValue:
+                            PasswordParameterDefinition passwordParameterDefinition = new PasswordParameterDefinition(jo.getString("name"), "", "");
+                            ParameterValue parameterPasswordValue = passwordParameterDefinition.createValue(jo.getString("value"));
+                            values.add(parameterPasswordValue);
+                            break;
+                        case TextParameterValue:
+                            TextParameterDefinition textParameterDefinition = new TextParameterDefinition(jo.getString("name"), "", "");
+                            ParameterValue parameterTextValue = textParameterDefinition.createValue(jo.getString("value"));
+                            values.add(parameterTextValue);
+                            break;
+                        case NOVALUE:
+                            StringParameterDefinition stringParameterDefinition1 = new StringParameterDefinition(jo.getString("name"), "", "");
+                            ParameterValue parameterString1Value = stringParameterDefinition1.createValue(jo.getString("value"));
+                            values.add(parameterString1Value);
+                            break;
+                    }
+                }
+                System.out.println(values);
+            }
+            System.out.println(build);
+            List<Action> actions = new ArrayList<Action>();
+            ParametersAction paramAction = new ParametersAction(values);
+            if (paramAction != null) {
+                actions.add(paramAction);
+            }
+
+            ((Project) project).scheduleBuild2(0, null, actions);
+            // Jenkins.getInstance().getQueue().schedule((hudson.model.Queue.Task) build.getParent(), 0, actions);
+            rsp.sendRedirect("../");
         }
-        BooleanParameterDefinition booleanParameterDefinition = new BooleanParameterDefinition("bool", false, "");
-        ParameterValue parameterValue = booleanParameterDefinition.createValue("true");
-        System.out.println("My bool parametervalue:");
-        System.out.println(parameterValue);
-        rsp.sendRedirect("../");
     }
+
+    public enum Type {
+        BooleanParameterValue, StringParameterValue, PasswordParameterValue, TextParameterValue, NOVALUE;
+        public static Type toType(String string) {
+            try{
+                return valueOf(string);
+            } catch (Exception e) {
+                return NOVALUE;
+            }
+        }
+    }
+
 
     public boolean isRebuildAvailable() {
         Job project = this.project;

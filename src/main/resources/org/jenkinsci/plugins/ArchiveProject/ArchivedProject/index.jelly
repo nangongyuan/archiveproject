@@ -36,16 +36,17 @@
             </l:pane>
         </l:side-panel>
         <l:main-panel>
-            <h3>Build Information:</h3>
-            <f:entry name="buildNumber" title="Choose Build Number: " field="buildNumber">
-                <select name="buildNumber" id="buildNo" onchange="Show_Parameters()">
-                    <j:forEach var="backups" items="${it.archiveWidget.backupsList}">
-                        <option value="${backups.number}">${backups.number}</option>
-                    </j:forEach>
-                </select>
-            </f:entry>
-            <h3>Build Parameters:</h3>
             <f:form name="build" action="buildSubmit" method="post" tableClass="parameters">
+            <h3>Build Information:</h3>
+            <table id="numberTable" width="70%" class="parameters">
+                <f:entry name="buildNumber" title="Choose Build Number: " field="buildNumber">
+                    <select name="buildNumber" id="buildNo" onchange="Show_Parameters()">
+                        <j:forEach var="backups" items="${it.archiveWidget.backupsList}">
+                            <option value="${backups.number}">${backups.number}</option>
+                        </j:forEach>
+                    </select>
+                </f:entry>
+            </table>
             <table id="parameterTable" width="70%" class="parameters">
             <script>
                 function Show_Parameters(){
@@ -59,39 +60,40 @@
                         for (var index in map.responseJSON){
                             nameStr = map.responseJSON[index]["name"];
                             valueStr = map.responseJSON[index]["value"];
+                            typeStr = map.responseJSON[index]["type"];
                             switch(map.responseJSON[index]["type"]){
                                 case "hudson.model.BooleanParameterValue":
-                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + nameStr +'" /><f:checkbox name="value" checked="' + valueStr +'" /></div></f:entry></tbody>';
+                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + nameStr +'" /><input type="hidden" name="type" value="' + typeStr + '" /><f:checkbox name="value" checked="' + valueStr +'" /></div></f:entry></tbody>';
                                     break;
                                 case "hudson.model.StringParameterValue":
-                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="' + nameStr +'" /><input description="String" name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
+                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="' + nameStr +'" /><input type="hidden" name="type" value="' + typeStr + '" /><input description="String" name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
                                 case "hudson.model.PasswordParameterValue":
-                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + nameStr +'" /><f:password name="value" value="' + valueStr +'" /></div></f:entry></tbody>';
+                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + nameStr + '" /><input type="hidden" name="type" value="' + typeStr + '" /><f:password name="value" value="' + valueStr +'" /></div></f:entry></tbody>';
                                     break;
                                 case "hudson.model.TextParameterValue":
-                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + nameStr +'" /><f:textarea name="value" value="' + valueStr +'" description="TextArea" /></div></f:entry></tbody>';
+                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + nameStr +'" /><input type="hidden" name="type" value="' + typeStr + '" /><f:textarea name="value" value="' + valueStr +'" description="TextArea" /></div></f:entry></tbody>';
                                     break;
                                 case "hudson.model.ValidatingStringParameterValue":
-                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
+                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input type="hidden" name="type" value="' + typeStr + '"/><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
                                 case "hudson.model.RandomStringParameterValue":
-                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
+                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input type="hidden" name="type" value="' + typeStr + '" /><input type="hidden" name="type" value="' + typeStr + '" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
                                 case "hudson.model.ListSubversionTagsParameterValue":
-                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
+                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input type="hidden" name="type" value="' + typeStr + '" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
                                 case "hudson.model.LabelParameterValue":
-                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
+                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input type="hidden" name="type" value="' + typeStr + '" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
                                 case "hudson.model.FileParameterValue":
-                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + nameStr +'" /><input name="file" type="file" jsonAware="true" /></div></f:entry></tbody>';
+                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + nameStr +'" /><input type="hidden" name="name" value="' + typeStr + '" /><input name="file" type="file" jsonAware="true" /></div></f:entry></tbody>';
                                     break;
                                 case "hudson.model.ExtendedChoiceParameterValue":
-                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
+                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input type="hidden" name="type" value="' + typeStr + '" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
                                 default:
-                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
+                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input type="hidden" name="type" value="' + typeStr + '" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                             }
                             if ( index == loopNum) {
                                 break;
