@@ -2,35 +2,22 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
     <l:layout title="Archived Project" >
         <l:side-panel>
-            <!--
-            <h1><strong>Archived Projects:</strong></h1>
-            <form>
-                <j:choose>
-                    <j:when test="${!it.archivedProjects.isEmpty()}">
-                        <j:forEach var="archiveProject" items="${it.archivedProjects}">
-                            <li>${archiveProject}</li>
-                        </j:forEach>
-                    </j:when>
-                    <j:otherwise>
-                        There are no archived projects.
-                    </j:otherwise>
-                </j:choose>
-            </form>
-            -->
             <l:task contextMenu="false" href="${rootURL}/" icon="icon-up icon-md" title="${%Back to Dashboard}"/>
-            <l:pane width="20" title="Backups">
+            <l:pane title="Backups">
             <tr>
                 <th class="pane" align="left">NO.</th>
                 <th class="pane" align="left">User</th>
                 <th class="pane" align="left">Date</th>
                 <th class="pane" align="left">Result</th>
+                <th class="pane" align="left">详情</th>
             </tr>
-            <j:forEach var="backups" items="${it.archiveWidget.backupsList}">
+            <j:forEach var="backups" items="${it.backupList}">
                 <tr>
                     <td class="pane" align="left">#${backups.number}</td>
                     <td class="pane" align="left">${backups.user}</td>
                     <td class="pane" align="left">${backups.date}</td>
                     <td class="pane" align="left">${backups.result}</td>
+                     <td class="pane" align="left"><a href="javacript:void(0);" onclick="Show_Parameters('${backups.fileName}')">详情</a></td>
                 </tr>
             </j:forEach>
             </l:pane>
@@ -38,26 +25,52 @@
         <l:main-panel>
             <f:form name="build" action="buildSubmit" method="post" tableClass="parameters">
             <h3>Build Information:</h3>
-            <table id="numberTable" width="70%" class="parameters">
-                <f:entry name="buildNumber" title="Choose Build Number: " field="buildNumber">
-                    <select name="buildNumber" id="buildNo" onchange="Show_Parameters()">
-                        <j:forEach var="backups" items="${it.archiveWidget.backupsList}">
-                            <option value="${backups.number}">${backups.number}</option>
-                        </j:forEach>
-                    </select>
-                </f:entry>
+
+            <table cellspacing="20px">
+                <tr>
+                    <td>NO</td> <td id="no"></td>
+                </tr>
+                <tr>
+                    <td>user</td> <td id="user"></td>
+                </tr>
+                 <tr>
+                     <td>date</td> <td id="date"></td>
+                 </tr>
+                 <tr>
+                    <td>result</td> <td id="result"></td>
+                 </tr>
+                 <tr>
+                    <td>fileName</td> <td id="fileName"></td>
+                 </tr>
+                 <tr>
+                    <td>duration</td> <td id="duration"></td>
+                 </tr>
+                 <tr>
+                    <td>workspace</td> <td id="workspace"></td>
+                 </tr>
             </table>
-            <table id="parameterTable" width="70%" class="parameters">
+            <div style="margin: 20px;">构造参数:</div>
+            <table id="parameterTable" class="parameters" style="margin: 20px;">
             <script>
-                function Show_Parameters(){
+                function Show_Parameters(fileName){
                     var archive_obj = <st:bind value="${it}" />;
-                    var buildNo = document.getElementById('buildNo');
-                    var buildNumber = buildNo.options[buildNo.selectedIndex].text;
-                    //console.log("selected value:" + buildNumber);
-                    archive_obj.GetParameters(buildNumber, function(map){
+                    archive_obj.GetParameters(fileName, function(map){
+                      console.log(map.responseJSON[0]["number"]);
+                        document.getElementById("no").innerHTML = '#'+map.responseJSON[0]["number"];
+                        document.getElementById("user").innerHTML = map.responseJSON[0]["user"];
+                        document.getElementById("date").innerHTML = map.responseJSON[0]["date"];
+                        document.getElementById("result").innerHTML =map.responseJSON[0]["result"];
+                        document.getElementById("fileName").innerHTML =map.responseJSON[0]["fileName"];
+                        document.getElementById("duration").innerHTML = map.responseJSON[0]["duration"];
+                        document.getElementById("workspace").innerHTML = map.responseJSON[0]["workspace"];
                         htmlString = '';
                         var loopNum = map.responseJSON.length - 1;
+                        console.log(map.responseJSON.length);
+                        console.log(map.responseJSON);
                         for (var index in map.responseJSON){
+                               if(index==0){
+                                continue;
+                               }
                             nameStr = map.responseJSON[index]["name"];
                             valueStr = map.responseJSON[index]["value"];
                             typeStr = map.responseJSON[index]["type"];
@@ -92,19 +105,21 @@
                                 case "hudson.model.ExtendedChoiceParameterValue":
                                     htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input type="hidden" name="type" value="' + typeStr + '" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
-                                default:
-                                    htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input type="hidden" name="type" value="' + typeStr + '" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                             }
-                            if ( index == loopNum) {
-                                break;
-                            }
+                            //if ( index == loopNum) {
+                            //    break;
+                            //}
                         }
                     var parameterTable = document.getElementById('parameterTable');
                     parameterTable.innerHTML = htmlString.trim();
                     });
                 }
                 document.addEventListener("DOMContentLoaded", function(){
-                    Show_Parameters();
+                    Show_Parameters('');
+                    document.getElementById('side-panel').setAttribute("class", "col-md-7");
+                    document.getElementById('side-panel').setAttribute("style", "float: left;");
+                    document.getElementById('main-panel').setAttribute("class", "col-md-12");
+                    document.getElementById('main-panel').setAttribute("style", "float: left;");
                 });
             </script>
             </table>

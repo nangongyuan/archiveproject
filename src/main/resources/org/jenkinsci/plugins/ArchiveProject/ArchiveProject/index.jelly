@@ -2,23 +2,26 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
     <l:layout title="Archive Project" >
         <st:include page="sidepanel.jelly" it="${it.project}" />
+
         <l:main-panel>
+
+        <f:form method="get" action="archiveProject">
             <div>
                 <p>
                     <strong>Archive Project</strong> will backup project build history and then discard old builds.<br/>
-                    By default, the latest 500 builds will be kept.<br/>
-                    You can specify the numbers you want in project configuration.
                 </p>
 
                 <p>
-                    Build History Numbers to keep: ${it.numToKeep}
+                    Build History Numbers to keep: <f:number name="numToKeep" default="50"  min="0" step="1" />
                 </p>
+
             </div>
             <div align="right">
-                <form method="get" action="archiveProject">
-                    <input type="submit" value="Archive Project" class="submit-button"/>
-                </form>
+                 <input type="submit" value="Archive Project" class="submit-button"/>
             </div>
+             </f:form>
+
         </l:main-panel>
+
     </l:layout>
 </j:jelly>
