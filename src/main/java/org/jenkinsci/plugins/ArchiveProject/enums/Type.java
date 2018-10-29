@@ -20,7 +20,7 @@ package org.jenkinsci.plugins.ArchiveProject.enums;
  * @since 1.0.0
  */
 public enum  Type {
-	BooleanParameterValue, StringParameterValue, PasswordParameterValue, TextParameterValue, NOVALUE;
+	BooleanParameterValue, StringParameterValue, PasswordParameterValue, TextParameterValue, FileParameterValue,NOVALUE;
 	public static Type toType(String string) {
 		try{
 			return valueOf(string);

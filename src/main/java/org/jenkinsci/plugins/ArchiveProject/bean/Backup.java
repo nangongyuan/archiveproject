@@ -8,7 +8,7 @@
  * <author>          <time>          <version>          <desc>
  * 作者姓名           修改时间           版本号              描述
  */
-package org.jenkinsci.plugins.ArchiveProject;
+package org.jenkinsci.plugins.ArchiveProject.bean;
 
 /**
  * 〈〉

@@ -55,7 +55,6 @@
                 function Show_Parameters(fileName){
                     var archive_obj = <st:bind value="${it}" />;
                     archive_obj.GetParameters(fileName, function(map){
-                      console.log(map.responseJSON[0]["number"]);
                         document.getElementById("no").innerHTML = '#'+map.responseJSON[0]["number"];
                         document.getElementById("user").innerHTML = map.responseJSON[0]["user"];
                         document.getElementById("date").innerHTML = map.responseJSON[0]["date"];
@@ -65,8 +64,6 @@
                         document.getElementById("workspace").innerHTML = map.responseJSON[0]["workspace"];
                         htmlString = '';
                         var loopNum = map.responseJSON.length - 1;
-                        console.log(map.responseJSON.length);
-                        console.log(map.responseJSON);
                         for (var index in map.responseJSON){
                                if(index==0){
                                 continue;
@@ -100,15 +97,12 @@
                                     htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input type="hidden" name="type" value="' + typeStr + '" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
                                 case "hudson.model.FileParameterValue":
-                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + nameStr +'" /><input type="hidden" name="name" value="' + typeStr + '" /><input name="file" type="file" jsonAware="true" /></div></f:entry></tbody>';
+                                    htmlString = htmlString + '<tbody><f:entry title="' + nameStr + '"><div name="parameter" ><input type="hidden" name="name" value="' + nameStr +'" /><input type="hidden" name="type" value="' + typeStr + '" /><input name="file" type="file" jsonAware="true" /></div></f:entry></tbody>';
                                     break;
                                 case "hudson.model.ExtendedChoiceParameterValue":
                                     htmlString = htmlString + '<tbody><tr><td class="setting-leftspace"> </td><td class="setting-name">' + nameStr + '</td><td class="setting-main"><div name="parameter"><input type="hidden" name="name" value="'+ nameStr +'" /><input type="hidden" name="type" value="' + typeStr + '" /><input name="value" type="text" class="setting-input   " value="' + valueStr +'" /></div></td><td class="setting-no-help"></td></tr><tr class="validation-error-area"><td colspan="2"></td><td></td><td></td></tr></tbody>';
                                     break;
                             }
-                            //if ( index == loopNum) {
-                            //    break;
-                            //}
                         }
                     var parameterTable = document.getElementById('parameterTable');
                     parameterTable.innerHTML = htmlString.trim();

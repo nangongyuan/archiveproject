@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.jcabi.xml.XML;
+import org.jenkinsci.plugins.ArchiveProject.bean.Backup;
 import org.jenkinsci.plugins.ArchiveProject.enums.Type;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -31,31 +32,33 @@ import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import static org.jenkinsci.plugins.ArchiveProject.consts.Const.*;
+import static org.jenkinsci.plugins.ArchiveProject.util.Util.parseXml;
+
 public class ArchivedProject implements Action {
 
     private AbstractProject project;
 
     public ArchivedProject(AbstractProject project) {
-        System.out.println("ArchivedProject - "+ project.getFullDisplayName());
         this.project = project;
     }
 
     @CheckForNull
     @Override
     public String getIconFileName() {
-        return "document.png";
+        return DOCUMENT_IOC;
     }
 
     @CheckForNull
     @Override
     public String getDisplayName() {
-        return "Archived Project";
+        return ARCHIVED_PROJECT_DISPLAY_NAME;
     }
 
     @CheckForNull
     @Override
     public String getUrlName() {
-        return "archived";
+        return ARCHIVED_PROJECT_URL_NAME;
     }
 
 
@@ -68,18 +71,18 @@ public class ArchivedProject implements Action {
     * @Date: 2018/10/28 0028
     */
     public List<Backup> getBackupList() {
-        System.out.println("ArchivedProject.getArchiveWidget");
         Jenkins.getInstance().checkPermission(Permission.READ);
         List<Backup> backupsList = new ArrayList<Backup>();
 
-        final File archivedProjectsDir = new File(Jenkins.getInstance().getRootDir(), "backup/" + project.getDisplayName() + "/builds");
+        final File archivedProjectsDir = new File(Jenkins.getInstance().getRootDir(), BACKUP_ROOT_DIR_NAME+"/" + project.getDisplayName() + "/"+PROJECT_BUILDS_DIR_NAME);
         File[] archivedProjects = archivedProjectsDir.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
-        System.out.println(Arrays.toString(archivedProjects));
-
+        if (archivedProjects==null){
+            return backupsList;
+        }
         for (File item:archivedProjects) {
-            File buildXml = new File(item, "build.xml");
+            File buildXml = new File(item, PROJECT_BUILD_XML_NAME);
             if (!buildXml.exists()) {
-                return backupsList;
+                continue;
             }
             Backup backup = parseXml(buildXml);
             backupsList.add(backup);
@@ -96,8 +99,7 @@ public class ArchivedProject implements Action {
     */ 
     @JavaScriptMethod
     public List<Map<String, String>> GetParameters(String build_fileName){
-        System.out.println(build_fileName);
-        final File archivedProjectsDir = new File(Jenkins.getInstance().getRootDir(), "backup/" + project.getDisplayName() + "/builds");
+        final File archivedProjectsDir = new File(Jenkins.getInstance().getRootDir(), BACKUP_ROOT_DIR_NAME+"/" + project.getDisplayName() + "/"+PROJECT_BUILDS_DIR_NAME);
         List<Map<String, String>> parameterList = new ArrayList<Map<String, String>>();
         if (build_fileName== null || build_fileName.equals("")){
             if (archivedProjectsDir!=null && archivedProjectsDir.listFiles().length>0){
@@ -106,7 +108,7 @@ public class ArchivedProject implements Action {
                 return parameterList;
             }
         }
-        File buildXml = new File(archivedProjectsDir, build_fileName + "/build.xml");
+        File buildXml = new File(archivedProjectsDir, build_fileName + "/"+PROJECT_BUILD_XML_NAME);
 
         try {
             if (buildXml.exists()) {
@@ -129,7 +131,6 @@ public class ArchivedProject implements Action {
                         Node node = nodeList.item(i);
                         if (node.hasChildNodes()) {
                             buildParameter.put(node.getNodeName(), node.getFirstChild().getNodeValue());
-                            System.out.println(node.getNodeName()+"----"+node.getFirstChild().getNodeValue());
                         }
                     }
                     parameterList.add(buildParameter);
@@ -141,41 +142,7 @@ public class ArchivedProject implements Action {
         return parameterList;
     }
 
-    /**
-    * @Description: 解析xml
-    * @Param:
-    * @return:
-    * @Author: yuan
-    * @Date: 2018/10/28 0028
-    */
-    private Backup parseXml(File buildXml){
-        Backup backup = new Backup();
-        SAXReader reader = new SAXReader();
-        try {
-            Document document = reader.read(buildXml);
-            Element root = document.getRootElement();
-            try {
-                Element userId = root.element("actions").element("hudson.model.CauseAction").element("causes").element("hudson.model.Cause_-UserIdCause").element("userId");
-                backup.setUser(userId.getText());
-            } catch (NullPointerException e) {
-                backup.setUser("anonymous");
-            }
-            backup.setNumber(root.element("number").getTextTrim());
-            Element startTime = root.element("startTime");
-            String startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.parseLong(startTime.getText())));
-            backup.setDate(startDate);
-            Element result = root.element("result");
-            backup.setResult(result.getText());
-            backup.setDuration(Integer.parseInt(root.element("duration").getTextTrim())/1000);
-            backup.setWorkspace(root.elementText("workspace"));
-            backup.setFileName(buildXml.getParentFile().getName());
-        } catch (DocumentException e) {
-            backup.setUser("anonymous");
-            backup.setDate("1900-01-01");
-            backup.setResult("N/A");
-        }
-        return backup;
-    }
+
 
     /**
     * @Description: 处理rebuild请求
@@ -223,6 +190,11 @@ public class ArchivedProject implements Action {
                             ParameterValue parameterTextValue = textParameterDefinition.createValue(jo.getString("value"));
                             values.add(parameterTextValue);
                             break;
+                        case FileParameterValue:
+                            FileParameterDefinition fileParameterDefinition = new FileParameterDefinition(jo.getString("name"), "");
+                            ParameterValue parameterFileValue = fileParameterDefinition.createValue(req);
+                            values.add(parameterFileValue);
+                            break;
                         case NOVALUE:
                             StringParameterDefinition stringParameterDefinition1 = new StringParameterDefinition(jo.getString("name"), "", "");
                             ParameterValue parameterString1Value = stringParameterDefinition1.createValue(jo.getString("value"));
@@ -236,7 +208,7 @@ public class ArchivedProject implements Action {
             if (paramAction != null) {
                 actions.add(paramAction);
             }
-            ((Project) project).scheduleBuild2(0, null, actions);
+            ((AbstractProject) project).scheduleBuild2(0, null, actions);
             rsp.sendRedirect("../");
         }
     }
@@ -262,7 +234,6 @@ public class ArchivedProject implements Action {
         @Nonnull
         @Override
         public Collection<? extends Action> createFor(@Nonnull AbstractProject project) {
-            System.out.println("ArchivedProjectFactory.createFor");
             return Collections.singleton(new ArchivedProject(project));
         }
     }

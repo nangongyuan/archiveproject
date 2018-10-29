@@ -17,6 +17,8 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
+import static org.jenkinsci.plugins.ArchiveProject.consts.Const.*;
+
 
 public class ArchiveProject implements Action {
 
@@ -31,19 +33,19 @@ public class ArchiveProject implements Action {
     @CheckForNull
     @Override
     public String getIconFileName() {
-        return "new-document.png";
+        return NEW_DOCUMENT_IOC;
     }
 
     @CheckForNull
     @Override
     public String getDisplayName() {
-        return "Archive Project";
+        return ARCHIVE_PROJECT_DISPLAY_NAME;
     }
 
     @CheckForNull
     @Override
     public String getUrlName() {
-        return "archive";
+        return ARCHIVE_PROJECT_URL_NAME;
     }
 
 
@@ -61,7 +63,7 @@ public class ArchiveProject implements Action {
     */
     public HttpRedirect doArchiveProject(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         //获取getNumToKeep
-        int numToKeep = Integer.parseInt(req.getParameter("numToKeep"));
+        int numToKeep = Integer.parseInt(req.getParameter(REQUEST_PARAMETER_NUMTOKEEP));
 
         //检查权限
         try{
@@ -79,7 +81,6 @@ public class ArchiveProject implements Action {
 
         for (int i=backups.size()-1; i>=0; i--)
         {
-            System.out.println(backups.get(i).getRootDir().toString());
             Run r = backups.get(i);
             if (r==lsb || r==lstb || r.isBuilding() || r.isKeepLog()){
                 backups.remove(i);
@@ -87,7 +88,7 @@ public class ArchiveProject implements Action {
         }
 
         //备份历史
-        File backupDir = new File(Jenkins.getInstance().getRootDir(), "backup");
+        File backupDir = new File(Jenkins.getInstance().getRootDir(), BACKUP_ROOT_DIR_NAME);
         File backupProjectDir = new File(backupDir, project.getName());
         backupProjectDir.mkdirs();
         try {
@@ -125,7 +126,7 @@ public class ArchiveProject implements Action {
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes basicFileAttributes) {
             //排序不需要备份的文件
-            if (!file.getParent().equals("builds")){
+            if (file.getParent().getParent().getFileName().toString().equals(PROJECT_BUILDS_DIR_NAME)){
                 try {
                     Path targetFile = targetDir.resolve(sourceDir.relativize(file));
                     CopyOption[] copyOptions = new CopyOption[] {
@@ -142,19 +143,27 @@ public class ArchiveProject implements Action {
 
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes basicFileAttributes) {
+            if (dir.toString().equals(sourceDir.toString()) || dir.getFileName().toString().equals(PROJECT_BUILDS_DIR_NAME)){
+                createDir(dir);
+                return FileVisitResult.CONTINUE;
+            }
             //将要备份的目录创建并进入
             for (Run item : backups) {
-                if (!Files.isSymbolicLink(dir) && item.getRootDir().toString().indexOf(item.getRootDir().toString())==0){
-                    try {
-                        Path newDir = targetDir.resolve(sourceDir.relativize(dir));
-                        Files.createDirectory(newDir);
-                    } catch (IOException ex) {
-                        System.err.println(ex);
-                    }
+                if (!Files.isSymbolicLink(dir) && item.getRootDir().getName().equals(dir.getFileName().toString())){
+                    createDir(dir);
                     return FileVisitResult.CONTINUE;
                 }
             }
             return FileVisitResult.SKIP_SUBTREE ;
+        }
+
+        private void createDir(Path dir){
+            try {
+                Path newDir = targetDir.resolve(sourceDir.relativize(dir));
+                Files.createDirectory(newDir);
+            } catch (IOException ex) {
+                System.err.println(ex);
+            }
         }
     }
 
