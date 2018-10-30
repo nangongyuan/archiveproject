@@ -49,7 +49,7 @@
                     <td>workspace</td> <td id="workspace"></td>
                  </tr>
             </table>
-            <div style="margin: 20px;">构造参数:</div>
+            <div style="margin: 20px;">构建参数:</div>
             <table id="parameterTable" class="parameters" style="margin: 20px;">
             <script>
                 function Show_Parameters(fileName){

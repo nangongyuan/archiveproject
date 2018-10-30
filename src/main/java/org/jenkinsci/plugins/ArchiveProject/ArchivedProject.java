@@ -87,6 +87,7 @@ public class ArchivedProject implements Action {
             Backup backup = parseXml(buildXml);
             backupsList.add(backup);
         }
+        Collections.sort(backupsList);
         return backupsList;
     }
 

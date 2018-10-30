@@ -17,7 +17,7 @@ package org.jenkinsci.plugins.ArchiveProject.bean;
  * @create 2018/10/27 0027
  * @since 1.0.0
  */
-public class Backup {
+public class Backup implements Comparable{
 	private String number;
 
 	private String user;
@@ -103,5 +103,12 @@ public class Backup {
 
 	public void setWorkspace(String workspace) {
 		this.workspace = workspace;
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		int a = Integer.valueOf(number);
+		int b = Integer.valueOf(((Backup)o).number);
+		return b-a;
 	}
 }
